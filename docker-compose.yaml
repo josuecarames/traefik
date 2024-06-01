@@ -1,0 +1,66 @@
+services:  
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    hostname: traefik
+    environment:
+      - CF_API_EMAIL=${CF_API_EMAIL}  # Cloudflare API email for ACME
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}  # Cloudflare DNS API token
+      - TRAEFIK_DASHBOARD_CREDENTIALS=${TRAEFIK_DASHBOARD_CREDENTIALS}
+      - TZ=America/Denver # Set time zone to Denver
+    env_file:
+      - .env
+    ports:
+      - "80:80"  # HTTP exposed
+      - "443:443"  # HTTPS exposed
+      # - "8080:8080"  # Dashboard access
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Docker socket
+      - ./traefik_config/traefik.yaml:/etc/traefik/traefik.yaml:ro # Traefik static config
+      - ./traefik_config/logs/:/var/log/traefik/ # Logs
+      - ./traefik_config/conf/config.yaml:/etc/traefik/config.yaml:ro
+      - ./traefik_config/certs/acme.json:/etc/traefik/acme.json
+    restart: unless-stopped
+    dns:
+      - 192.168.33.8
+      - 192.168.33.214
+
+  novnc:
+    image: gotget/novnc:latest
+    container_name: novnc
+    ports:
+      - "6080:6080"
+    command: --vnc kali-vm.josuecarames.com:5901
+    restart: unless-stopped
+    dns:
+      - 192.168.33.8
+      - 192.168.33.214
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    ports:
+      - 9100:9100
+    command:
+      - '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped

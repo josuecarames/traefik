@@ -1,0 +1,55 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+log:
+  level: DEBUG  # Set log level to ERROR to minimize log output (INFO for more verbosity or DEBUG)
+  filePath: /var/log/traefik/traefik.log
+
+accessLog:
+  filePath: /var/log/traefik/access.log
+  format: common  # Using common format for access logs or json to switch to JSON formatted logs
+
+api:
+  dashboard: true
+  insecure: false  # Set to false to recommend secure setup
+
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    address: :443
+    http:
+      tls:
+        certResolver: cloudflare
+
+certificatesResolvers:
+  cloudflare:  # Renamed to match Docker Compose setup
+    acme:
+      email: dns@josuecarames.com  # Using environment variable
+      storage: /etc/traefik/acme.json
+      caServer: https://acme-v02.api.letsencrypt.org/directory  # Production server
+      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging
+      dnsChallenge:
+        provider: cloudflare
+        disablePropagationCheck: true
+        delayBeforeCheck: "60"  # Adjust as necessary
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+  file:
+    filename: /etc/traefik/config.yaml
+
+serversTransport:
+  insecureSkipVerify: true  # Optionally, set to true if trust is established. This setting disables TLS verification for backend services

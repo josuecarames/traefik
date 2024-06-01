@@ -1,0 +1,389 @@
+http:
+
+################################################################### Routers ###################################################################
+
+  routers:
+
+    traefik-dashboard:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`traefik-dashboard.josuecarames.com`)"
+      service: api@internal
+      middlewares:
+        # - traefik-auth
+        - traefik-https-redirect
+        - sslheader
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: "josuecarames.com"
+          - sans: "*.josuecarames.com"
+
+    unifi:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`unifi.josuecarames.com`)"
+      service: unifi
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    ntfy:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`ntfy.josuecarames.com`) || Host(`ntfy.securetechnique.com`)"
+      service: ntfy
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    pve1:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`pve1.josuecarames.com`)"
+      service: pve1
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    pve2:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`pve2.josuecarames.com`)"
+      service: pve2
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    pve3:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`pve3.josuecarames.com`)"
+      service: pve3
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    proxmox:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`pve.josuecarames.com`)"
+      service: proxmox
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    nas:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`nas.josuecarames.com`)"
+      service: nas
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    portainer:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`portainer.josuecarames.com`)"
+      service: portainer
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    homepage:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`home.josuecarames.com`)"
+      service: homepage
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    authentik:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`authentik.josuecarames.com`) || Host(`authentik.securetechnique.com`)"
+      service: authentik
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    kasm:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`kasm.josuecarames.com`) || Host(`kasm.securetechnique.com`)"
+      service: kasm
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    pikvm:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`pikvm.josuecarames.com`) || Host(`pikvm.securetechnique.com`)"
+      service: pikvm
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    ilo1:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`ilo1.josuecarames.com`)"
+      service: ilo1
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    ilo2:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`ilo2.josuecarames.com`)"
+      service: ilo2
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    ilo3:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`ilo3.josuecarames.com`)"
+      service: ilo3
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    www:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`www.josuecarames.com`)"
+      service: www
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    prometheus:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`prometheus.josuecarames.com`)"
+      service: prometheus
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    grafana:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`grafana.josuecarames.com`)"
+      service: grafana
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    uptime:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`uptime.josuecarames.com`)"
+      service: uptime
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    novnc:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`kali.josuecarames.com`)"
+      service: novnc
+      middlewares:
+        - add-vnc-html-prefix
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+    vscode:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`vscode.josuecarames.com`)"
+      service: vscode
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
+################################################################### Services ###################################################################
+
+  services:
+
+    unifi:
+      loadBalancer:
+        servers:
+          - url: "https://unifi-server.josuecarames.com"
+        passHostHeader: true
+
+    pve1:
+      loadBalancer:
+        servers:
+          - url: "https://pve1-server.josuecarames.com:8006"
+        passHostHeader: true
+
+    pve2:
+      loadBalancer:
+        servers:
+          - url: "https://pve2-server.josuecarames.com:8006"
+        passHostHeader: true
+
+    pve3:
+      loadBalancer:
+        servers:
+          - url: "https://pve3-server.josuecarames.com:8006"
+        passHostHeader: true
+
+    proxmox:
+      loadBalancer:
+        servers:
+          - url: "https://pve1-server.josuecarames.com:8006"
+          # - url: "https://pve2-server.josuecarames.com:8006"
+          # - url: "https://pve3-server.josuecarames.com:8006"
+        passHostHeader: true
+        # healthCheck:
+        #   path: "/health" # Adjust this path to your health check endpoint
+        #   interval: "10s" # Interval for health checks
+        #   timeout: "2s" # Timeout for health checks
+
+    nas:
+      loadBalancer:
+        servers:
+          - url: "https://nas-server.josuecarames.com:5001"
+        passHostHeader: true
+
+    portainer:
+      loadBalancer:
+        servers:
+          - url: "https://portainer-server.josuecarames.com:9443"
+        passHostHeader: true
+
+    homepage:
+      loadBalancer:
+        servers:
+          - url: "http://homepage.josuecarames.com:3000"
+        passHostHeader: true
+
+    authentik:
+      loadBalancer:
+        servers:
+          - url: "https://authentik-server.josuecarames.com:9443"
+        passHostHeader: true
+
+    kasm:
+      loadBalancer:
+        servers:
+          - url: "https://kasm-server.josuecarames.com"
+        passHostHeader: true
+
+    ilo1:
+      loadBalancer:
+        servers:
+          - url: "https://ilo1-server.josuecarames.com"
+        passHostHeader: true
+
+    ilo2:
+      loadBalancer:
+        servers:
+          - url: "https://ilo2-server.josuecarames.com"
+        passHostHeader: true
+
+    ilo3:
+      loadBalancer:
+        servers:
+          - url: "https://ilo3-server.josuecarames.com"
+        passHostHeader: true
+
+    www:
+      loadBalancer:
+        servers:
+          - url: "http://www-server.josuecarames.com:8123"
+        passHostHeader: true
+
+    prometheus:
+      loadBalancer:
+        servers:
+          - url: "http://prometheus-server.josuecarames.com:9090"
+        passHostHeader: true
+
+    grafana:
+      loadBalancer:
+        servers:
+          - url: "http://grafana-server.josuecarames.com:3000"
+        passHostHeader: true
+
+    uptime:
+      loadBalancer:
+        servers:
+          - url: "http://uptime-server.josuecarames.com:3001"
+        passHostHeader: true
+
+    ntfy:
+      loadBalancer:
+        servers:
+          - url: "http://ntfy-server.josuecarames.com"
+        passHostHeader: true
+
+    pikvm:
+      loadBalancer:
+        servers:
+          - url: "http://pikvm.josuecarames.com"
+        passHostHeader: true
+
+    novnc:
+      loadBalancer:
+        servers:
+          - url: "http://novnc:6080"
+        passHostHeader: true
+
+    vscode:
+      loadBalancer:
+        servers:
+          - url: "http://vscode-server.josuecarames.com:8443"
+        passHostHeader: true
+
+################################################################### Middlewares ###################################################################
+
+  middlewares:
+    sslheader:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    traefik-https-redirect:
+      redirectscheme:
+        scheme: https
+
+    add-vnc-html-prefix:
+      replacePathRegex:
+        regex: "^/$"
+        replacement: "/vnc.html"
+
+    traefik-auth:
+      basicAuth:
+        users:
+          - "${TRAEFIK_DASHBOARD_CREDENTIALS}"
