@@ -230,6 +230,16 @@ http:
       tls:
         certResolver: cloudflare
 
+    ollama:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`ollama.josuecarames.com`)"
+      service: ollama
+      middlewares:
+        - sslheader
+      tls:
+        certResolver: cloudflare
+
 ################################################################### Services ###################################################################
 
   services:
@@ -364,6 +374,12 @@ http:
       loadBalancer:
         servers:
           - url: "http://vscode-server.josuecarames.com:8443"
+        passHostHeader: true
+
+    ollama:
+      loadBalancer:
+        servers:
+          - url: "http://ollama-server.josuecarames.com:11434"
         passHostHeader: true
 
 ################################################################### Middlewares ###################################################################
