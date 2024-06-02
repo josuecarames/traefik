@@ -10,7 +10,7 @@ http:
       rule: "Host(`traefik-dashboard.josuecarames.com`)"
       service: api@internal
       middlewares:
-        # - traefik-auth
+        - auth@file
         - traefik-https-redirect
         - sslheader
       tls:
@@ -105,6 +105,7 @@ http:
       rule: "Host(`home.josuecarames.com`)"
       service: homepage
       middlewares:
+        - auth@file
         - sslheader
       tls:
         certResolver: cloudflare
@@ -112,7 +113,7 @@ http:
     authentik:
       entryPoints:
         - "websecure"
-      rule: "Host(`authentik.josuecarames.com`) || Host(`authentik.securetechnique.com`)"
+      rule: "Host(`authentik.josuecarames.com`) || Host(`authentik.securetechnique.com`) || HostRegexp(`{subdomain:[a-z0-9]+}.securetechnique.com`) && PathPrefix(`/outpost.goauthentik.io/`) || HostRegexp(`{subdomain:[a-z0-9]+}.josuecarames.com`) && PathPrefix(`/outpost.goauthentik.io/`)"
       service: authentik
       middlewares:
         - sslheader
@@ -186,6 +187,7 @@ http:
       service: prometheus
       middlewares:
         - sslheader
+        - auth@file
       tls:
         certResolver: cloudflare
 
@@ -399,7 +401,22 @@ http:
         regex: "^/$"
         replacement: "/vnc.html"
 
-    traefik-auth:
-      basicAuth:
-        users:
-          - "${TRAEFIK_DASHBOARD_CREDENTIALS}"
+    auth:
+      # basicAuth:
+      #   users:
+      #     - "${TRAEFIK_DASHBOARD_CREDENTIALS}"
+      forwardauth:
+        address: "http://authentik-server.josuecarames.com:9000/outpost.goauthentik.io/auth/traefik"
+        trustForwardHeader: true 
+        authResponseHeaders:
+          - X-authentik-username
+          - X-authentik-groups
+          - X-authentik-email
+          - X-authentik-name
+          - X-authentik-uid
+          - X-authentik-jwt
+          - X-authentik-meta-jwks
+          - X-authentik-meta-outpost
+          - X-authentik-meta-provider
+          - X-authentik-meta-app
+          - x-authentik-meta-version
